@@ -56,3 +56,69 @@ async function supprimerSortie(id) {
 }
 
 charger();
+
+// Fonction pour l'Export JSON (Point 3)
+function exporterJSON(sortie) {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sortie));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", sortie.titre + ".json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
+
+// Ajouter cette partie dans ta fonction afficher(s) de sortie.js
+function afficher(s) {
+    const div = document.getElementById('contenu');
+    div.innerHTML = `
+        <div class="sortie-detail">
+            <!-- ... ton code existant ... -->
+            
+            <button onclick='window.exporterSortie()' class="btn btn-gris">📤 Exporter JSON</button>
+            
+            <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+            
+            <h3>Historique des réalisations</h3>
+            <form id="form-realisation" style="margin-top:10px; max-width:100%;">
+                <input type="date" id="date_r" required>
+                <textarea id="comm_r" placeholder="Commentaire sur cette fois-ci..."></textarea>
+                <button type="submit" class="btn btn-vert">Ajouter cette date</button>
+            </form>
+            <div id="liste-realisations" style="margin-top:15px;"></div>
+        </div>
+    `;
+
+    // Attacher l'événement pour le JSON
+    window.exporterSortie = () => exporterJSON(s);
+
+    // Charger les réalisations existantes
+    chargerRealisations(s.id);
+
+    // Gérer l'ajout d'une réalisation
+    document.getElementById('form-realisation').onsubmit = async (e) => {
+        e.preventDefault();
+        const body = {
+            id_sortie: s.id,
+            date_realisation: document.getElementById('date_r').value,
+            commentaire: document.getElementById('comm_r').value
+        };
+        await fetch('/api/realisations', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(body)
+        });
+        chargerRealisations(s.id);
+    };
+}
+
+async function chargerRealisations(idSortie) {
+    const res = await fetch(`/api/realisations/${idSortie}`);
+    const data = await res.json();
+    const listDiv = document.getElementById('liste-realisations');
+    listDiv.innerHTML = data.map(r => `
+        <div style="font-size:0.9rem; padding:8px; border-left:3px solid #2d6a4f; background:#f9f9f9; margin-bottom:5px;">
+            <strong>${new Date(r.date_realisation).toLocaleDateString()}</strong>: ${r.commentaire || 'Pas de commentaire'}
+        </div>
+    `).join('');
+}
