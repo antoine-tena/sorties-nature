@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter une sortie</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+    <a href="/" class="logo">🥾 Sorties Natures</a>
+    <div>
+        <a href="/">Accueil</a>
+        <a href="ajouter.html">Ajouter une sortie</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>Nouvelle sortie</h1>
+
+    <form id="form-ajout" enctype="multipart/form-data">
+
+        <div class="form-groupe">
+            <label>Titre *</label>
+            <input type="text" name="titre" id="titre" required placeholder="ex: Tour du lac Blanc">
+        </div>
+
+        <div class="form-groupe">
+            <label>Description</label>
+            <textarea name="description" id="description" rows="4" placeholder="Décrivez la sortie..."></textarea>
+        </div>
+
+        <div style="display:flex; gap:15px; flex-wrap:wrap;">
+            <div class="form-groupe" style="flex:1;">
+                <label>Type</label>
+                <select name="id_type_sortie" id="id_type_sortie">
+                    <option value="">-- choisir --</option>
+                </select>
+            </div>
+            <div class="form-groupe" style="flex:1;">
+                <label>Difficulté</label>
+                <select name="difficulte">
+                    <option value="">-- choisir --</option>
+                    <option>Facile</option>
+                    <option>Moyen</option>
+                    <option>Difficile</option>
+                    <option>Très difficile</option>
+                </select>
+            </div>
+        </div>
+
+        <div style="display:flex; gap:15px; flex-wrap:wrap;">
+            <div class="form-groupe" style="flex:1;">
+                <label>Distance (km)</label>
+                <input type="number" name="distance" step="0.1" min="0">
+            </div>
+            <div class="form-groupe" style="flex:1;">
+                <label>Dénivelé + (m)</label>
+                <input type="number" name="denivele_positif" min="0">
+            </div>
+        </div>
+
+        <div class="form-groupe">
+            <label>
+                <input type="checkbox" name="chien_autorise" value="1" checked>
+                Chien autorisé
+            </label>
+        </div>
+
+        <div class="form-groupe">
+            <label>Fichier GPX (optionnel)</label>
+            <input type="file" name="gpx" accept=".gpx">
+        </div>
+
+        <div style="display:flex; gap:10px; align-items:center; margin-top:10px;">
+            <button type="submit" class="btn btn-vert">Enregistrer</button>
+            <a href="/" class="btn btn-gris">Annuler</a>
+        </div>
+
+        <p id="msg"></p>
+    </form>
+</div>
+
+<script src="js/ajouter.js"></script>
+</body>
+</html>
