@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorties Natures</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav>
+    <a href="/" class="logo">🥾 Sorties Natures</a>
+    <div>
+        <a href="/">Accueil</a>
+        <a href="ajouter.html">Ajouter une sortie</a>
+    </div>
+</nav>
+
+<div class="container">
+    <h1>Les sorties</h1>
+
+    <div class="filtres">
+        <input type="text" id="recherche" placeholder="Rechercher par titre...">
+        <select id="filtre-type">
+            <option value="">Tous les types</option>
+        </select>
+    </div>
+
+    <div id="liste-sorties"></div>
+</div>
+
+<script src="js/index.js"></script>
+</body>
+</html>
