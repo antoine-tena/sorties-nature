@@ -1,0 +1,224 @@
+/* styles generaux */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    color: #333;
+}
+
+nav {
+    background: #2d6a4f;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 15px;
+}
+
+nav .logo {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-left: 0;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 0 15px;
+}
+
+h1 {
+    margin-bottom: 20px;
+    color: #1b4332;
+}
+
+h2 {
+    color: #2d6a4f;
+    margin-bottom: 10px;
+}
+
+/* filtres */
+.filtres {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.filtres input, .filtres select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+
+.filtres input {
+    flex: 1;
+    min-width: 150px;
+}
+
+/* cartes des sorties */
+.grille {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 15px;
+}
+
+.carte {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+}
+
+.carte h3 {
+    margin-bottom: 8px;
+    font-size: 1.05rem;
+    color: #1b4332;
+}
+
+.carte p {
+    font-size: 0.88rem;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+.carte .infos {
+    font-size: 0.85rem;
+    color: #777;
+    margin-bottom: 10px;
+}
+
+.badge {
+    display: inline-block;
+    background: #d8f3dc;
+    color: #2d6a4f;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.78rem;
+    margin-right: 5px;
+    margin-bottom: 8px;
+}
+
+/* boutons */
+.btn {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    border: none;
+    text-decoration: none;
+}
+
+.btn-vert {
+    background: #2d6a4f;
+    color: white;
+}
+
+.btn-vert:hover {
+    background: #1b4332;
+    text-decoration: none;
+}
+
+.btn-rouge {
+    background: #e63946;
+    color: white;
+}
+
+.btn-rouge:hover {
+    background: #c1121f;
+}
+
+.btn-gris {
+    background: #e0e0e0;
+    color: #333;
+}
+
+/* formulaire */
+.form-groupe {
+    margin-bottom: 15px;
+}
+
+.form-groupe label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.form-groupe input,
+.form-groupe select,
+.form-groupe textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+
+.form-groupe textarea {
+    resize: vertical;
+}
+
+form {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.08);
+    max-width: 600px;
+}
+
+.msg-ok { color: green; margin-top: 10px; }
+.msg-err { color: red; margin-top: 10px; }
+
+/* detail sortie */
+.sortie-detail {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.08);
+}
+
+.sortie-detail .stats {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin: 15px 0;
+}
+
+.stat-bloc {
+    background: #d8f3dc;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+/* responsive mobile */
+@media (max-width: 600px) {
+    .grille {
+        grid-template-columns: 1fr;
+    }
+    nav {
+        flex-direction: column;
+        gap: 8px;
+    }
+    nav div {
+        display: flex;
+        gap: 10px;
+    }
+}
