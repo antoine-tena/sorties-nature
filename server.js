@@ -70,3 +70,27 @@ app.get('/api/types', (req, res) => {
 });
 
 app.listen(3000, () => console.log('serveur sur http://localhost:3000'));
+
+// Route pour récupérer les réalisations d'une sortie
+app.get('/api/realisations/:id', (req, res) => {
+    const rows = db.prepare('SELECT * FROM realisations WHERE id_sortie = ? ORDER BY date_realisation DESC').all(req.params.id);
+    res.json(rows);
+});
+
+// Route pour ajouter une réalisation (Historique)
+app.post('/api/realisations', (req, res) => {
+    const { id_sortie, date_realisation, commentaire } = req.body;
+    const info = db.prepare('INSERT INTO realisations (id_sortie, date_realisation, commentaire) VALUES (?, ?, ?)').run(id_sortie, date_realisation, commentaire);
+    res.json({ id: info.lastInsertRowid });
+});
+
+// Pense à mettre à jour ton POST /api/sorties pour inclure latitude et longitude
+app.post('/api/sorties', upload.single('gpx'), (req, res) => {
+    const { titre, description, id_type_sortie, difficulte, distance, denivele_positif, chien_autorise, latitude, longitude } = req.body;
+    const gpxPath = req.file ? '/uploads/' + req.file.filename : null;
+
+    const stm = db.prepare(`INSERT INTO sorties (titre, description, id_type_sortie, difficulte, distance, denivele_positif, chien_autorise, trace_gpx, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+    const info = stm.run(titre, description, id_type_sortie, difficulte, distance, denivele_positif, chien_autorise, gpxPath, latitude, longitude);
+    
+    res.json({ id: info.lastInsertRowid });
+});
