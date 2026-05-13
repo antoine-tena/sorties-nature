@@ -52,7 +52,7 @@ function afficher(sortie) {
 
             ${sortie.trace_gpx ? '<p style="margin-top:12px;"><a href="' + sortie.trace_gpx + '" download class="btn btn-gris">Telecharger GPX</a></p>' : ''}
 
-            ${sortie.latitude && sortie.longitude ? '<div id="carte-depart" style="height:250px; margin-top:15px; border-radius:6px;"></div>' : ''}
+            <div id="carte-sortie" class="carte-sortie" aria-label="Carte de la sortie"></div>
 
             <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
 
@@ -69,19 +69,9 @@ function afficher(sortie) {
     window.sortieCourante = sortie;
     chargerRealisations(sortie.id);
 
-    // carte leaflet si coordonnees disponibles
-    if (sortie.latitude && sortie.longitude) {
-        setTimeout(() => {
-            const carte = L.map('carte-depart').setView([sortie.latitude, sortie.longitude], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap'
-            }).addTo(carte);
-            L.marker([sortie.latitude, sortie.longitude])
-                .addTo(carte)
-                .bindPopup('Point de départ')
-                .openPopup();
-        }, 0);
-    }
+    setTimeout(() => {
+        initCarte(sortie);
+    }, 0);
 
     document.getElementById('form-realisation').onsubmit = async (e) => {
         e.preventDefault();
@@ -139,6 +129,72 @@ async function chargerRealisations(idSortie) {
             ${texteOuVide(realisation.commentaire) || 'Pas de commentaire'}
         </div>
     `).join('');
+}
+
+function initCarte(sortie) {
+    const container = document.getElementById('carte-sortie');
+    if (!container || typeof L === 'undefined') return;
+
+    if (window.carteSortie) {
+        window.carteSortie.remove();
+        window.carteSortie = null;
+    }
+
+    const hasCoords = sortie.latitude && sortie.longitude;
+    const defaultCenter = [46.2276, 2.2137];
+    const center = hasCoords ? [sortie.latitude, sortie.longitude] : defaultCenter;
+    const zoom = hasCoords ? 13 : 6;
+
+    const carte = L.map(container).setView(center, zoom);
+    window.carteSortie = carte;
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(carte);
+
+    let marker = null;
+    if (hasCoords) {
+        marker = L.marker(center)
+            .addTo(carte)
+            .bindPopup('Point de depart');
+    }
+
+    if (sortie.trace_gpx) {
+        chargerTraceGpx(carte, sortie.trace_gpx, marker);
+    }
+}
+
+async function chargerTraceGpx(carte, url, marker) {
+    try {
+        const res = await fetch(url);
+        if (!res.ok) return;
+        const text = await res.text();
+        const xml = new DOMParser().parseFromString(text, 'application/xml');
+        const points = Array.from(xml.querySelectorAll('trkpt, rtept'))
+            .map((pt) => [
+                Number(pt.getAttribute('lat')),
+                Number(pt.getAttribute('lon'))
+            ])
+            .filter((coords) => Number.isFinite(coords[0]) && Number.isFinite(coords[1]));
+
+        if (!points.length) return;
+
+        const trace = L.polyline(points, {
+            color: '#2d6a4f',
+            weight: 4,
+            opacity: 0.9
+        }).addTo(carte);
+
+        carte.fitBounds(trace.getBounds(), { padding: [20, 20] });
+
+        if (marker) {
+            marker.remove();
+        }
+
+        L.marker(points[0]).addTo(carte).bindPopup('Debut trace');
+    } catch (err) {
+        console.warn('Impossible de charger le GPX', err);
+    }
 }
 
 charger();
