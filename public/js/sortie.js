@@ -17,37 +17,6 @@ async function charger() {
     afficher(s);
 }
 
-function afficher(s) {
-    const div = document.getElementById('contenu');
-
-    div.innerHTML = `
-        <div class="sortie-detail">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:15px;">
-                <h1 style="color:#1b4332;">${s.titre}</h1>
-                <div style="display:flex; gap:8px;">
-                    <button onclick="supprimerSortie(${s.id})" class="btn btn-rouge">Supprimer</button>
-                </div>
-            </div>
-
-            <div style="margin-bottom:12px;">
-                ${s.type_nom ? '<span class="badge">' + s.type_nom + '</span>' : ''}
-                ${s.difficulte ? '<span class="badge">' + s.difficulte + '</span>' : ''}
-                ${s.chien_autorise ? '<span class="badge">🐕 chien autorisé</span>' : '<span class="badge" style="background:#ffccd5;color:#9d0208;">🐕 chien interdit</span>'}
-            </div>
-
-            ${s.description ? '<p style="margin-bottom:15px; color:#444;">' + s.description + '</p>' : ''}
-
-            <div class="stats">
-                ${s.distance ? '<div class="stat-bloc">📏 ' + s.distance + ' km</div>' : ''}
-                ${s.denivele_positif ? '<div class="stat-bloc">⛰️ +' + s.denivele_positif + ' m</div>' : ''}
-                ${s.difficulte ? '<div class="stat-bloc">💪 ' + s.difficulte + '</div>' : ''}
-            </div>
-
-            ${s.trace_gpx ? '<p style="margin-top:12px;"><a href="' + s.trace_gpx + '" download class="btn btn-gris">⬇️ Télécharger GPX</a></p>' : ''}
-        </div>
-    `;
-}
-
 async function supprimerSortie(id) {
     if (!confirm('Supprimer cette sortie ?')) return;
 
@@ -68,17 +37,36 @@ function exporterJSON(sortie) {
     downloadAnchorNode.remove();
 }
 
-// Ajouter cette partie dans ta fonction afficher(s) de sortie.js
 function afficher(s) {
     const div = document.getElementById('contenu');
     div.innerHTML = `
         <div class="sortie-detail">
-            <!-- ... ton code existant ... -->
-            
-            <button onclick='window.exporterSortie()' class="btn btn-gris">📤 Exporter JSON</button>
-            
-            <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
-            
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:15px;">
+                <h1 style="color:#1b4332;">${s.titre}</h1>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <button onclick="supprimerSortie(${s.id})" class="btn btn-rouge">Supprimer</button>
+                    <button onclick='window.exporterSortie()' class="btn btn-gris">Exporter JSON</button>
+                </div>
+            </div>
+
+            <div style="margin-bottom:12px;">
+                ${s.type_nom ? '<span class="badge">' + s.type_nom + '</span>' : ''}
+                ${s.difficulte ? '<span class="badge">' + s.difficulte + '</span>' : ''}
+                ${s.chien_autorise ? '<span class="badge"> chien autorisé</span>' : '<span class="badge" style="background:#ffccd5;color:#9d0208;">🐕 chien interdit</span>'}
+            </div>
+
+            ${s.description ? '<p style="margin-bottom:15px; color:#444;">' + s.description + '</p>' : ''}
+
+            <div class="stats">
+                ${s.distance ? '<div class="stat-bloc"> ' + s.distance + ' km</div>' : ''}
+                ${s.denivele_positif ? '<div class="stat-bloc"> +' + s.denivele_positif + ' m</div>' : ''}
+                ${s.difficulte ? '<div class="stat-bloc"> ' + s.difficulte + '</div>' : ''}
+            </div>
+
+            ${s.trace_gpx ? '<p style="margin-top:12px;"><a href="' + s.trace_gpx + '" download class="btn btn-gris">⬇️ Télécharger GPX</a></p>' : ''}
+
+            <hr>
+
             <h3>Historique des réalisations</h3>
             <form id="form-realisation" style="margin-top:10px; max-width:100%;">
                 <input type="date" id="date_r" required>
