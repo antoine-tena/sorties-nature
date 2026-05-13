@@ -30,6 +30,7 @@ function afficher(sortie) {
                 <h1 style="color:#1b4332;">${sortie.titre}</h1>
                 <div style="display:flex; gap:8px; flex-wrap:wrap;">
                     <button onclick="exporterJSON()" class="btn btn-gris">Exporter JSON</button>
+                    <a href="modifier.html?id=${sortie.id}" class="btn btn-gris">Modifier</a>
                     <button onclick="supprimerSortie(${sortie.id})" class="btn btn-rouge">Supprimer</button>
                 </div>
             </div>
