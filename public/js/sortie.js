@@ -51,7 +51,9 @@ function afficher(sortie) {
 
             ${sortie.trace_gpx ? '<p style="margin-top:12px;"><a href="' + sortie.trace_gpx + '" download class="btn btn-gris">Telecharger GPX</a></p>' : ''}
 
-            <hr>
+            ${sortie.latitude && sortie.longitude ? '<div id="carte-depart" style="height:250px; margin-top:15px; border-radius:6px;"></div>' : ''}
+
+            <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
 
             <h3>Historique des realisations</h3>
             <form id="form-realisation" style="margin-top:10px; max-width:100%;">
@@ -65,6 +67,20 @@ function afficher(sortie) {
 
     window.sortieCourante = sortie;
     chargerRealisations(sortie.id);
+
+    // carte leaflet si coordonnees disponibles
+    if (sortie.latitude && sortie.longitude) {
+        setTimeout(() => {
+            const carte = L.map('carte-depart').setView([sortie.latitude, sortie.longitude], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
+            }).addTo(carte);
+            L.marker([sortie.latitude, sortie.longitude])
+                .addTo(carte)
+                .bindPopup('Point de départ')
+                .openPopup();
+        }, 0);
+    }
 
     document.getElementById('form-realisation').onsubmit = async (e) => {
         e.preventDefault();
