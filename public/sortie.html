@@ -8,21 +8,35 @@
 </head>
 <body>
 
-<nav>
-    <a href="/" class="logo">Sorties Natures</a>
-    <div>
-        <a href="/">Accueil</a>
-        <a href="ajouter.html">Ajouter une sortie</a>
+<header>
+    <nav>
+        <a href="/" class="logo">Sorties Natures</a>
+        <div>
+            <a href="/">Accueil</a>
+            <a href="ajouter.html">Ajouter une sortie</a>
+        </div>
+    </nav>
+</header>
+
+<main class="container page-detail">
+    <div class="page-head">
+        <a href="/" class="btn btn-gris btn-ghost">← Retour</a>
+        <div class="page-title">
+            <p class="kicker">Sortie</p>
+            <h2>Détail de la sortie</h2>
+            <p class="subtitle">Informations, stats et historique de la sortie.</p>
+        </div>
     </div>
-</nav>
 
-<div class="container">
-    <a href="/" style="font-size:0.9rem; color:#2d6a4f;">Retour</a>
-
-    <div id="contenu" style="margin-top:15px;">
+    <section id="contenu" class="detail-body" aria-live="polite">
         <p>Chargement...</p>
-    </div>
-</div>
+    </section>
+
+    <noscript>
+        <p>Activez JavaScript pour afficher les détails de la sortie.</p>
+    </noscript>
+
+</main>
 
 <script src="js/sortie.js"></script>
 </body>

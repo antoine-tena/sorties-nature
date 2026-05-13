@@ -26,7 +26,7 @@ function afficher(sortie) {
 
     div.innerHTML = `
         <div class="sortie-detail">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:15px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:15px;">
                 <h1 style="color:#1b4332;">${sortie.titre}</h1>
                 <div style="display:flex; gap:8px; flex-wrap:wrap;">
                     <button onclick="exporterJSON()" class="btn btn-gris">Exporter JSON</button>
@@ -51,7 +51,7 @@ function afficher(sortie) {
 
             ${sortie.trace_gpx ? '<p style="margin-top:12px;"><a href="' + sortie.trace_gpx + '" download class="btn btn-gris">Telecharger GPX</a></p>' : ''}
 
-            <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+            <hr>
 
             <h3>Historique des realisations</h3>
             <form id="form-realisation" style="margin-top:10px; max-width:100%;">

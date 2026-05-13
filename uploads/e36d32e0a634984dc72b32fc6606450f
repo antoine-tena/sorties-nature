@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Gemini-AI" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata>
+    <name>Balade Crêt du Maure - Annecy</name>
+    <desc>Une boucle facile au départ de la Visitation pour surplomber le lac d'Annecy.</desc>
+  </metadata>
+  <trk>
+    <name>Boucle Crêt du Maure</name>
+    <trkseg>
+      <!-- Départ : Parking de la Visitation -->
+      <trkpt lat="45.8918" lon="6.1245"><ele>480</ele></trkpt>
+      <!-- Montée vers les Puisots -->
+      <trkpt lat="45.8885" lon="6.1210"><ele>550</ele></trkpt>
+      <!-- Point de vue sur le lac -->
+      <trkpt lat="45.8840" lon="6.1250"><ele>610</ele></trkpt>
+      <!-- Passage près du parc animalier -->
+      <trkpt lat="45.8870" lon="6.1300"><ele>580</ele></trkpt>
+      <!-- Retour vers la Visitation -->
+      <trkpt lat="45.8918" lon="6.1245"><ele>480</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

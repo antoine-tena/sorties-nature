@@ -37,7 +37,7 @@ function afficherSorties(liste) {
             <div>
                 ${s.type_nom ? '<span class="badge">' + s.type_nom + '</span>' : ''}
                 ${s.difficulte ? '<span class="badge">' + s.difficulte + '</span>' : ''}
-                ${s.chien_autorise ? '<span class="badge">🐕 chien ok</span>' : ''}
+                ${s.chien_autorise ? '<span class="badge">chien ok</span>' : ''}
             </div>
             <p class="infos">
                 ${s.distance ? s.distance + ' km' : ''}
