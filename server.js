@@ -1,4 +1,4 @@
-// serveur principal express
+// Serveur principal Express : expose l'API JSON et sert l'interface statique.
 const express = require('express');
 const mysql = require('mysql2/promise');
 const multer = require('multer');
@@ -7,8 +7,11 @@ const fs = require('fs');
 const app = express();
 const upload = multer({ dest: 'uploads/' });
 
+// Les fichiers GPX sont stockes sur disque ; la base garde uniquement leur chemin public.
 if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
 
+// Pool de connexions MySQL partage par toutes les routes pour eviter de rouvrir
+// une connexion a chaque requete HTTP.
 const pool = mysql.createPool({
     host: process.env.DB_HOST || 'localhost',
     port: Number(process.env.DB_PORT || 3306),
@@ -25,17 +28,22 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use('/uploads', express.static('uploads'));
 
+// Convertit les champs numeriques optionnels du front en NULL SQL quand ils sont vides.
 function toNullableNumber(value) {
     if (value === undefined || value === null || value === '') return null;
     const number = Number(value);
     return Number.isFinite(number) ? number : null;
 }
 
+// MySQL stocke les booleens sous forme TINYINT(1), donc on normalise ici les valeurs
+// venant des formulaires HTML, du JSON ou des imports.
 function toBooleanInt(value, defaultValue = 0) {
     if (value === undefined || value === null || value === '') return defaultValue;
     return value === true || value === 'true' || value === '1' || value === 1 ? 1 : 0;
 }
 
+// Centralise la forme d'une sortie avant insertion ou modification pour garder
+// les routes POST, PUT et import JSON coherentes entre elles.
 function sortiePayload(body, file) {
     return {
         titre: body.titre,
@@ -52,6 +60,7 @@ function sortiePayload(body, file) {
     };
 }
 
+// Requete commune au detail et a la modification d'une sortie.
 async function getSortieById(id) {
     const [rows] = await pool.execute(`
         SELECT s.*, t.nom AS type_nom
@@ -62,6 +71,7 @@ async function getSortieById(id) {
     return rows[0];
 }
 
+// Evite de repeter try/catch dans chaque route asynchrone Express.
 function asyncRoute(handler) {
     return async (req, res, next) => {
         try {
@@ -72,6 +82,8 @@ function asyncRoute(handler) {
     };
 }
 
+// Pendant l'import, un fichier peut fournir seulement le nom du type.
+// On reutilise le type existant ou on le cree si necessaire.
 async function resolveTypeId(conn, sortie) {
     if (sortie.id_type_sortie) return sortie.id_type_sortie;
     if (!sortie.type_nom) return null;
@@ -83,7 +95,7 @@ async function resolveTypeId(conn, sortie) {
     return created.insertId;
 }
 
-// recupere toutes les sorties
+// Liste toutes les sorties avec leur type pour l'affichage et les filtres.
 app.get('/api/sorties', asyncRoute(async (req, res) => {
     const [rows] = await pool.execute(`
         SELECT s.*, t.nom AS type_nom
@@ -94,7 +106,7 @@ app.get('/api/sorties', asyncRoute(async (req, res) => {
     res.json(rows);
 }));
 
-// export JSON de toutes les sorties avec leurs realisations
+// Export global : chaque sortie embarque ses realisations pour produire un fichier autonome.
 app.get('/api/export', asyncRoute(async (req, res) => {
     const [sorties] = await pool.execute(`
         SELECT s.*, t.nom AS type_nom
@@ -104,6 +116,7 @@ app.get('/api/export', asyncRoute(async (req, res) => {
     `);
     const [realisations] = await pool.execute('SELECT * FROM realisations ORDER BY id_sortie, date_realisation DESC');
 
+    // Regroupe les realisations en memoire pour eviter une requete SQL par sortie.
     const realisationsParSortie = new Map();
     realisations.forEach((realisation) => {
         const liste = realisationsParSortie.get(realisation.id_sortie) || [];
@@ -121,7 +134,7 @@ app.get('/api/export', asyncRoute(async (req, res) => {
     });
 }));
 
-// import JSON de sorties. Accepte soit { sorties: [...] }, soit directement [...]
+// Import JSON de sorties. Accepte soit { sorties: [...] }, soit directement [...].
 app.post('/api/import', asyncRoute(async (req, res) => {
     const sorties = Array.isArray(req.body) ? req.body : req.body.sorties;
     if (!Array.isArray(sorties)) {
@@ -130,6 +143,7 @@ app.post('/api/import', asyncRoute(async (req, res) => {
 
     const conn = await pool.getConnection();
     try {
+        // Transaction : soit tout l'import passe, soit aucune ligne partielle n'est gardee.
         await conn.beginTransaction();
         let imported = 0;
 
@@ -156,6 +170,7 @@ app.post('/api/import', asyncRoute(async (req, res) => {
                 payload.longitude
             ]);
 
+            // Les realisations importees sont rattachees au nouvel id genere localement.
             if (Array.isArray(item.realisations)) {
                 for (const realisation of item.realisations) {
                     if (!realisation.date_realisation) continue;
@@ -178,14 +193,14 @@ app.post('/api/import', asyncRoute(async (req, res) => {
     }
 }));
 
-// recupere une sortie par son id
+// Detail d'une sortie.
 app.get('/api/sorties/:id', asyncRoute(async (req, res) => {
     const sortie = await getSortieById(req.params.id);
     if (!sortie) return res.status(404).json({ error: 'sortie introuvable' });
     res.json(sortie);
 }));
 
-// ajouter une sortie
+// Ajoute une sortie, avec un fichier GPX optionnel envoye en multipart/form-data.
 app.post('/api/sorties', upload.single('gpx'), asyncRoute(async (req, res) => {
     const payload = sortiePayload(req.body, req.file);
     if (!payload.titre) return res.status(400).json({ error: 'titre obligatoire' });
@@ -212,7 +227,7 @@ app.post('/api/sorties', upload.single('gpx'), asyncRoute(async (req, res) => {
     res.status(201).json({ id: result.insertId });
 }));
 
-// modifier une sortie
+// Modifie une sortie en conservant les anciennes valeurs quand un champ n'est pas renvoye.
 app.put('/api/sorties/:id', upload.single('gpx'), asyncRoute(async (req, res) => {
     const existing = await getSortieById(req.params.id);
     if (!existing) return res.status(404).json({ error: 'sortie introuvable' });
@@ -244,25 +259,25 @@ app.put('/api/sorties/:id', upload.single('gpx'), asyncRoute(async (req, res) =>
     res.json({ ok: true });
 }));
 
-// supprimer une sortie
+// Supprime une sortie ; les realisations associees sont supprimees par la contrainte SQL.
 app.delete('/api/sorties/:id', asyncRoute(async (req, res) => {
     await pool.execute('DELETE FROM sorties WHERE id = ?', [req.params.id]);
     res.json({ ok: true });
 }));
 
-// recupere les types
+// Types disponibles pour les formulaires et filtres.
 app.get('/api/types', asyncRoute(async (req, res) => {
     const [rows] = await pool.execute('SELECT * FROM types_sortie ORDER BY nom');
     res.json(rows);
 }));
 
-// statistiques calculees cote base de donnees
+// Statistiques maintenues cote base de donnees, notamment via trigger SQL.
 app.get('/api/stats', asyncRoute(async (req, res) => {
     const [rows] = await pool.execute('SELECT label, valeur FROM stats_eco ORDER BY label');
     res.json(rows);
 }));
 
-// recupere les realisations d'une sortie
+// Recupere l'historique des dates auxquelles une sortie a ete realisee.
 app.get('/api/realisations/:id', asyncRoute(async (req, res) => {
     const [rows] = await pool.execute(
         'SELECT * FROM realisations WHERE id_sortie = ? ORDER BY date_realisation DESC',
@@ -271,7 +286,7 @@ app.get('/api/realisations/:id', asyncRoute(async (req, res) => {
     res.json(rows);
 }));
 
-// ajouter une realisation
+// Ajoute une date de realisation avec un commentaire specifique.
 app.post('/api/realisations', asyncRoute(async (req, res) => {
     const { id_sortie, date_realisation, commentaire } = req.body;
     if (!id_sortie || !date_realisation) {
@@ -286,7 +301,7 @@ app.post('/api/realisations', asyncRoute(async (req, res) => {
     res.status(201).json({ id: result.insertId });
 }));
 
-// modifier une realisation
+// Modifie le commentaire ou la date d'une realisation existante.
 app.put('/api/realisations/:id', asyncRoute(async (req, res) => {
     const { date_realisation, commentaire } = req.body;
     if (!date_realisation) return res.status(400).json({ error: 'date_realisation obligatoire' });
@@ -300,13 +315,15 @@ app.put('/api/realisations/:id', asyncRoute(async (req, res) => {
     res.json({ ok: true });
 }));
 
-// supprimer une realisation
+// Supprime une realisation sans supprimer la sortie associee.
 app.delete('/api/realisations/:id', asyncRoute(async (req, res) => {
     await pool.execute('DELETE FROM realisations WHERE id = ?', [req.params.id]);
     res.json({ ok: true });
 }));
 
 app.use((err, req, res, next) => {
+    // Dernier filet de securite : les erreurs SQL ou serveur restent journalisees,
+    // mais la reponse envoyee au client reste simple.
     console.error(err);
     res.status(500).json({ error: 'erreur serveur' });
 });
