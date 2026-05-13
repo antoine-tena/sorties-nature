@@ -41,6 +41,7 @@ function afficherSorties(liste) {
                 ${s.difficulte ? '<span class="badge">' + s.difficulte + '</span>' : ''}
                 ${s.chien_autorise ? '<span class="badge">chien ok</span>' : ''}
             </div>
+            ${s.description ? '<p class="carte-desc">' + s.description.substring(0, 80) + (s.description.length > 80 ? '...' : '') + '</p>' : ''}
             <p class="infos">
                 ${s.distance ? s.distance + ' km' : ''}
                 ${s.distance && s.denivele_positif ? ' • ' : ''}
