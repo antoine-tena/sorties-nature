@@ -23,6 +23,8 @@ async function chargerTypes() {
 
 function afficherSorties(liste) {
     const div = document.getElementById('liste-sorties');
+    const compteur = document.getElementById('compteur');
+    compteur.textContent = liste.length + ' sortie(s) trouvée(s)';
 
     if (liste.length === 0) {
         div.innerHTML = '<p>Aucune sortie.</p>';
@@ -55,10 +57,14 @@ function afficherSorties(liste) {
 function filtrer() {
     const texte = document.getElementById('recherche').value.toLowerCase();
     const type = document.getElementById('filtre-type').value;
+    const difficulte = document.getElementById('filtre-difficulte').value;
+    const chien = document.getElementById('filtre-chien').checked;
 
     const filtre = toutesLesSorties.filter(s => {
         if (texte && !s.titre.toLowerCase().includes(texte)) return false;
         if (type && s.type_nom !== type) return false;
+        if (difficulte && s.difficulte !== difficulte) return false;
+        if (chien && !s.chien_autorise) return false;
         return true;
     });
     afficherSorties(filtre);
@@ -66,5 +72,7 @@ function filtrer() {
 
 document.getElementById('recherche').addEventListener('input', filtrer);
 document.getElementById('filtre-type').addEventListener('change', filtrer);
+document.getElementById('filtre-difficulte').addEventListener('change', filtrer);
+document.getElementById('filtre-chien').addEventListener('change', filtrer);
 
 chargerSorties();
