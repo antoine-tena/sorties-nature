@@ -373,6 +373,15 @@ form {
     margin: 22px 0;
 }
 
+.carte-sortie {
+    height: 320px;
+    margin-top: 16px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid rgba(45, 106, 79, 0.2);
+    box-shadow: 0 10px 24px rgba(17, 30, 26, 0.08);
+}
+
 .stat-bloc {
     background: linear-gradient(135deg, rgba(45, 106, 79, 0.15), rgba(45, 106, 79, 0.05));
     padding: 10px 16px;
