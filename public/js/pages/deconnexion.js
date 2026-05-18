@@ -1,12 +1,16 @@
 async function deconnecter() {
     const msg = document.getElementById('msg');
 
-    await fetch('/api/auth/logout', { method: 'POST' }).catch(() => null);
+    await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'same-origin'
+    }).catch(() => null);
+
     msg.textContent = 'Vous etes maintenant deconnecte.';
     msg.className = 'msg-ok';
 
     setTimeout(() => {
-        window.location.href = '/';
+        window.location.href = '/connexion.html';
     }, 800);
 }
 

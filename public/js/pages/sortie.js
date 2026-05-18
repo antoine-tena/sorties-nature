@@ -1,12 +1,10 @@
-// page detail d'une sortie
+const paramsSortie = new URLSearchParams(window.location.search);
+const idSortiePage = paramsSortie.get('id');
 
-const params = new URLSearchParams(window.location.search);
-const id = params.get('id');
+if (!idSortiePage) window.location.href = '/';
 
-if (!id) window.location.href = '/';
-
-async function charger() {
-    const res = await fetch('/api/sorties/' + id);
+async function chargerSortiePage() {
+    const res = await window.apiFetch('/api/sorties/' + idSortiePage);
 
     if (!res.ok) {
         document.getElementById('contenu').innerHTML = '<p>Sortie introuvable.</p>';
@@ -14,14 +12,14 @@ async function charger() {
     }
 
     const sortie = await res.json();
-    afficher(sortie);
+    afficherSortie(sortie);
 }
 
 function texteOuVide(value) {
     return value === null || value === undefined ? '' : value;
 }
 
-function afficher(sortie) {
+function afficherSortie(sortie) {
     const div = document.getElementById('contenu');
 
     div.innerHTML = `
@@ -81,7 +79,7 @@ function afficher(sortie) {
             commentaire: document.getElementById('comm_r').value
         };
 
-        await fetch('/api/realisations', {
+        await window.apiFetch('/api/realisations', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
@@ -96,7 +94,7 @@ function afficher(sortie) {
 async function supprimerSortie(idSortie) {
     if (!confirm('Supprimer cette sortie ?')) return;
 
-    await fetch('/api/sorties/' + idSortie, { method: 'DELETE' });
+    await window.apiFetch('/api/sorties/' + idSortie, { method: 'DELETE' });
     window.location.href = '/';
 }
 
@@ -114,7 +112,7 @@ function exporterJSON() {
 }
 
 async function chargerRealisations(idSortie) {
-    const res = await fetch(`/api/realisations/${idSortie}`);
+    const res = await window.apiFetch(`/api/realisations/${idSortie}`);
     const data = await res.json();
     const listDiv = document.getElementById('liste-realisations');
 
@@ -197,4 +195,8 @@ async function chargerTraceGpx(carte, url, marker) {
     }
 }
 
-charger();
+(async function initPage() {
+    const session = await (window.SortiesProtectedPage || Promise.resolve({ user: true }));
+    if (!session || !session.user) return;
+    await chargerSortiePage();
+})();

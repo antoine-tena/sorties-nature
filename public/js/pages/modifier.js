@@ -1,8 +1,6 @@
-// page modification d'une sortie existante
-
-const params = new URLSearchParams(window.location.search);
-const id = params.get('id');
-const traceEditor = window.TraceMapEditor
+const paramsModifier = new URLSearchParams(window.location.search);
+const idModifier = paramsModifier.get('id');
+const traceEditorModifier = window.TraceMapEditor
     ? window.TraceMapEditor.create({
         mapId: 'carte-trace-modifier',
         latInputId: 'latitude',
@@ -14,15 +12,15 @@ const traceEditor = window.TraceMapEditor
     })
     : null;
 
-if (!id) window.location.href = '/';
+if (!idModifier) window.location.href = '/';
 
-document.getElementById('btn-annuler').href = 'sortie.html?id=' + id;
+document.getElementById('btn-annuler').href = 'sortie.html?id=' + idModifier;
 
-async function chargerTypes() {
-    const res = await fetch('/api/types');
+async function chargerTypesModifier() {
+    const res = await window.apiFetch('/api/types');
     const types = await res.json();
     const sel = document.getElementById('id_type_sortie');
-    types.forEach(t => {
+    types.forEach((t) => {
         const opt = document.createElement('option');
         opt.value = t.id;
         opt.textContent = t.nom;
@@ -30,10 +28,10 @@ async function chargerTypes() {
     });
 }
 
-async function charger() {
-    await chargerTypes();
+async function chargerSortieModifier() {
+    await chargerTypesModifier();
 
-    const res = await fetch('/api/sorties/' + id);
+    const res = await window.apiFetch('/api/sorties/' + idModifier);
     if (!res.ok) {
         alert('Sortie introuvable');
         window.location.href = '/';
@@ -41,7 +39,6 @@ async function charger() {
     }
 
     const s = await res.json();
-
     document.getElementById('titre').value = s.titre || '';
     document.getElementById('description').value = s.description || '';
     document.getElementById('difficulte').value = s.difficulte || '';
@@ -51,29 +48,30 @@ async function charger() {
     document.getElementById('longitude').value = s.longitude || '';
     document.getElementById('chien_autorise').checked = !!s.chien_autorise;
 
-    // selectionner le bon type
     if (s.id_type_sortie) {
         document.getElementById('id_type_sortie').value = s.id_type_sortie;
     }
 
-    if (traceEditor && s.trace_gpx) {
-        await traceEditor.loadFromUrl(s.trace_gpx);
+    if (traceEditorModifier && s.trace_gpx) {
+        await traceEditorModifier.loadFromUrl(s.trace_gpx);
     }
 }
 
-document.getElementById('form-modifier').onsubmit = async (e) => {
+async function soumettreModification(e) {
     e.preventDefault();
 
-    const formData = new FormData(e.target);
+    const formData = new FormData(e.currentTarget);
     formData.set('_method', 'PUT');
-    if (traceEditor) {
-        traceEditor.appendGeneratedTraceFile(formData, formData.get('titre'));
+
+    if (traceEditorModifier) {
+        traceEditorModifier.appendGeneratedTraceFile(formData, formData.get('titre'));
     }
+
     if (!document.getElementById('chien_autorise').checked) {
         formData.set('chien_autorise', '0');
     }
 
-    const res = await fetch('/api/sorties/' + id, {
+    const res = await window.apiFetch('/api/sorties/' + idModifier, {
         method: 'POST',
         body: formData
     });
@@ -82,12 +80,17 @@ document.getElementById('form-modifier').onsubmit = async (e) => {
     if (res.ok) {
         msg.className = 'msg-ok';
         msg.textContent = 'Sortie modifiée !';
-        setTimeout(() => window.location.href = 'sortie.html?id=' + id, 800);
+        setTimeout(() => window.location.href = 'sortie.html?id=' + idModifier, 800);
     } else {
         const err = await res.json();
         msg.className = 'msg-err';
         msg.textContent = 'Erreur : ' + (err.error || 'inconnue');
     }
-};
+}
 
-charger();
+(async function initPage() {
+    const session = await (window.SortiesProtectedPage || Promise.resolve({ user: true }));
+    if (!session || !session.user) return;
+    await chargerSortieModifier();
+    document.getElementById('form-modifier').addEventListener('submit', soumettreModification);
+})();
