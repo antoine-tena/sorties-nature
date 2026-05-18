@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter une sortie - Sorties Natures</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
 
@@ -14,6 +15,7 @@
         <a href="/">Accueil</a>
         <a href="ajouter.html">Ajouter une sortie</a>
         <a href="importer.html">Importer JSON</a>
+        <div id="nav-auth" class="nav-auth"></div>
     </div>
 </nav>
 
@@ -86,6 +88,17 @@
             <input type="file" name="gpx" id="gpx" accept=".gpx">
         </div>
 
+        <div class="form-groupe">
+            <label>Trace sur la carte</label>
+            <p class="field-help">Cliquez sur la carte pour ajouter des points. Un trace est dessine entre les points et peut etre exporte en GPX.</p>
+            <div id="carte-trace-ajout" class="carte-trace"></div>
+            <div class="trace-actions">
+                <button type="button" class="btn btn-gris" id="export-gpx">Exporter le trace en GPX</button>
+                <button type="button" class="btn btn-gris" id="vider-trace">Vider le trace</button>
+            </div>
+            <p id="trace-info" class="field-help">Aucun point sur la carte.</p>
+        </div>
+
         <div style="display:flex; gap:10px; align-items:center; margin-top:10px;">
             <button type="submit" class="btn btn-vert">Enregistrer la sortie</button>
             <a href="/" class="btn btn-gris">Annuler</a>
@@ -95,6 +108,9 @@
     </form>
 </div>
 
+<script src="js/auth.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/trace-map.js"></script>
 <script src="js/ajouter.js"></script>
 </body>
 </html>

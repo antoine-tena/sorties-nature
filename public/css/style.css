@@ -87,6 +87,19 @@ nav div {
     gap: 6px;
 }
 
+.nav-auth {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nav-user {
+    color: #f4fbf6;
+    font-size: 0.9rem;
+    opacity: 0.92;
+    margin-left: 12px;
+}
+
 .container {
     max-width: 1100px;
     margin: 24px auto 60px;
@@ -341,6 +354,37 @@ form {
     box-shadow: var(--shadow-soft);
     border: 1px solid rgba(45, 106, 79, 0.12);
     max-width: 620px;
+}
+
+.field-help {
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin-top: 6px;
+}
+
+.carte-trace {
+    height: 320px;
+    margin-top: 10px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid rgba(45, 106, 79, 0.2);
+    box-shadow: 0 10px 24px rgba(17, 30, 26, 0.08);
+}
+
+.trace-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+.auth-card {
+    max-width: 520px;
+}
+
+.auth-note {
+    margin-bottom: 18px;
+    color: var(--muted);
 }
 
 .msg-ok { color: #2b8a3e; margin-top: 10px; }

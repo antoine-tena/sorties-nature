@@ -1,5 +1,17 @@
 // formulaire ajout sortie
 
+const traceEditor = window.TraceMapEditor
+    ? window.TraceMapEditor.create({
+        mapId: 'carte-trace-ajout',
+        latInputId: 'latitude',
+        lngInputId: 'longitude',
+        fileInputId: 'gpx',
+        exportButtonId: 'export-gpx',
+        clearButtonId: 'vider-trace',
+        infoId: 'trace-info'
+    })
+    : null;
+
 async function chargerTypes() {
     const res = await fetch('/api/types');
     const types = await res.json();
@@ -17,6 +29,9 @@ document.getElementById('form-ajout').addEventListener('submit', async function(
     const msg = document.getElementById('msg');
 
     const formData = new FormData(this);
+    if (traceEditor) {
+        traceEditor.appendGeneratedTraceFile(formData, formData.get('titre'));
+    }
 
     // si checkbox non cochee on met 0
     if (!this.querySelector('[name="chien_autorise"]').checked) {
@@ -36,7 +51,8 @@ document.getElementById('form-ajout').addEventListener('submit', async function(
             window.location.href = 'sortie.html?id=' + data.id;
         }, 800);
     } else {
-        msg.textContent = 'Erreur...';
+        const err = await res.json().catch(() => ({ error: 'erreur inconnue' }));
+        msg.textContent = 'Erreur : ' + (err.error || 'erreur inconnue');
         msg.className = 'msg-err';
     }
 });

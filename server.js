@@ -3,9 +3,11 @@ const express = require('express');
 const mysql = require('mysql2/promise');
 const multer = require('multer');
 const fs = require('fs');
+const crypto = require('crypto');
 
 const app = express();
 const upload = multer({ dest: 'uploads/' });
+const sessions = new Map();
 
 // Les fichiers GPX sont stockes sur disque ; la base garde uniquement leur chemin public.
 if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
@@ -82,6 +84,53 @@ function asyncRoute(handler) {
     };
 }
 
+function parseCookies(req) {
+    const raw = req.headers.cookie || '';
+    return raw
+        .split(';')
+        .map((part) => part.trim())
+        .filter(Boolean)
+        .reduce((cookies, part) => {
+            const separatorIndex = part.indexOf('=');
+            if (separatorIndex === -1) return cookies;
+
+            const key = part.slice(0, separatorIndex).trim();
+            const value = part.slice(separatorIndex + 1).trim();
+            cookies[key] = decodeURIComponent(value);
+            return cookies;
+        }, {});
+}
+
+function hashPassword(password) {
+    return crypto.createHash('sha256').update(password).digest('hex');
+}
+
+function createSessionToken() {
+    return crypto.randomBytes(24).toString('hex');
+}
+
+function setSessionCookie(res, token) {
+    res.setHeader('Set-Cookie', `sorties_session=${token}; Path=/; HttpOnly; SameSite=Lax`);
+}
+
+function clearSessionCookie(res) {
+    res.setHeader('Set-Cookie', 'sorties_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0');
+}
+
+function currentSession(req) {
+    const cookies = parseCookies(req);
+    const token = cookies.sorties_session;
+    return token ? sessions.get(token) || null : null;
+}
+
+function exposeUser(user) {
+    return {
+        id: user.id,
+        nom: user.nom,
+        email: user.email
+    };
+}
+
 // Pendant l'import, un fichier peut fournir seulement le nom du type.
 // On reutilise le type existant ou on le cree si necessaire.
 async function resolveTypeId(conn, sortie) {
@@ -94,6 +143,78 @@ async function resolveTypeId(conn, sortie) {
     const [created] = await conn.execute('INSERT INTO types_sortie (nom) VALUES (?)', [sortie.type_nom]);
     return created.insertId;
 }
+
+app.get('/api/auth/session', (req, res) => {
+    const user = currentSession(req);
+    res.json({ user: user ? exposeUser(user) : null });
+});
+
+app.post('/api/auth/register', asyncRoute(async (req, res) => {
+    const nom = (req.body.nom || '').trim();
+    const email = (req.body.email || '').trim().toLowerCase();
+    const password = req.body.password || '';
+
+    if (!nom || !email || !password) {
+        return res.status(400).json({ error: 'nom, email et mot de passe obligatoires' });
+    }
+
+    if (password.length < 4) {
+        return res.status(400).json({ error: 'mot de passe trop court' });
+    }
+
+    try {
+        const [result] = await pool.execute(`
+            INSERT INTO utilisateurs (nom, email, mot_de_passe_hash)
+            VALUES (?, ?, ?)
+        `, [nom, email, hashPassword(password)]);
+
+        const user = { id: result.insertId, nom, email };
+        const token = createSessionToken();
+        sessions.set(token, user);
+        setSessionCookie(res, token);
+        res.status(201).json({ user: exposeUser(user) });
+    } catch (err) {
+        if (err && err.code === 'ER_DUP_ENTRY') {
+            return res.status(409).json({ error: 'email deja utilise' });
+        }
+        throw err;
+    }
+}));
+
+app.post('/api/auth/login', asyncRoute(async (req, res) => {
+    const email = (req.body.email || '').trim().toLowerCase();
+    const password = req.body.password || '';
+
+    if (!email || !password) {
+        return res.status(400).json({ error: 'email et mot de passe obligatoires' });
+    }
+
+    const [rows] = await pool.execute(`
+        SELECT id, nom, email, mot_de_passe_hash
+        FROM utilisateurs
+        WHERE email = ?
+    `, [email]);
+
+    const user = rows[0];
+    if (!user || user.mot_de_passe_hash !== hashPassword(password)) {
+        return res.status(401).json({ error: 'identifiants invalides' });
+    }
+
+    const sessionUser = exposeUser(user);
+    const token = createSessionToken();
+    sessions.set(token, sessionUser);
+    setSessionCookie(res, token);
+    res.json({ user: sessionUser });
+}));
+
+app.post('/api/auth/logout', (req, res) => {
+    const cookies = parseCookies(req);
+    if (cookies.sorties_session) {
+        sessions.delete(cookies.sorties_session);
+    }
+    clearSessionCookie(res);
+    res.json({ ok: true });
+});
 
 // Liste toutes les sorties avec leur type pour l'affichage et les filtres.
 app.get('/api/sorties', asyncRoute(async (req, res) => {

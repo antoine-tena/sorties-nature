@@ -5,14 +5,13 @@ Application web pour gérer des sorties nature : randonnée, vélo, ski, trail, 
 ## Lancer le projet
 
 ```bash
-npm install
-docker compose up -d
-npm start
+docker compose up -d --build
 ```
 
 Ouvrir ensuite http://localhost:3000
 
 La base MySQL est initialisée automatiquement au premier lancement du conteneur avec `bdd.sql`.
+L'application web est désormais servie par PHP/Apache, et l'acces a la base se fait via des fichiers PHP.
 
 ## Réinitialiser la base
 
@@ -55,6 +54,6 @@ DB_PASSWORD=sorties_password
 
 ## Technologies
 
-- Node.js + Express
+- PHP + Apache
 - MySQL 8 via Docker Compose
 - HTML / CSS / JavaScript

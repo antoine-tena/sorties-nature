@@ -2,6 +2,17 @@
 
 const params = new URLSearchParams(window.location.search);
 const id = params.get('id');
+const traceEditor = window.TraceMapEditor
+    ? window.TraceMapEditor.create({
+        mapId: 'carte-trace-modifier',
+        latInputId: 'latitude',
+        lngInputId: 'longitude',
+        fileInputId: 'gpx',
+        exportButtonId: 'export-gpx',
+        clearButtonId: 'vider-trace',
+        infoId: 'trace-info'
+    })
+    : null;
 
 if (!id) window.location.href = '/';
 
@@ -44,18 +55,26 @@ async function charger() {
     if (s.id_type_sortie) {
         document.getElementById('id_type_sortie').value = s.id_type_sortie;
     }
+
+    if (traceEditor && s.trace_gpx) {
+        await traceEditor.loadFromUrl(s.trace_gpx);
+    }
 }
 
 document.getElementById('form-modifier').onsubmit = async (e) => {
     e.preventDefault();
 
     const formData = new FormData(e.target);
+    formData.set('_method', 'PUT');
+    if (traceEditor) {
+        traceEditor.appendGeneratedTraceFile(formData, formData.get('titre'));
+    }
     if (!document.getElementById('chien_autorise').checked) {
         formData.set('chien_autorise', '0');
     }
 
     const res = await fetch('/api/sorties/' + id, {
-        method: 'PUT',
+        method: 'POST',
         body: formData
     });
 

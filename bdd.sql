@@ -1,8 +1,18 @@
 -- Reinitialisation complete : utile en developpement et lors du premier lancement Docker.
+DROP TABLE IF EXISTS utilisateurs;
 DROP TABLE IF EXISTS realisations;
 DROP TABLE IF EXISTS sorties;
 DROP TABLE IF EXISTS types_sortie;
 DROP TABLE IF EXISTS stats_eco;
+
+-- Comptes applicatifs pour la connexion, l'inscription et la deconnexion.
+CREATE TABLE utilisateurs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    email VARCHAR(190) NOT NULL UNIQUE,
+    mot_de_passe_hash VARCHAR(255) NOT NULL,
+    date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 -- Catalogue des types de sorties pour eviter les valeurs libres incoherentes.
 CREATE TABLE types_sortie (
@@ -59,6 +69,9 @@ CREATE TABLE stats_eco (
 );
 
 INSERT INTO stats_eco (label, valeur) VALUES ('nb_total_sorties', 0);
+
+INSERT INTO utilisateurs (nom, email, mot_de_passe_hash)
+VALUES ('Demo', 'demo@sorties.local', SHA2('demo1234', 256));
 
 DELIMITER //
 -- Exemple de logique cote base : le compteur est mis a jour sans code applicatif.

@@ -9,10 +9,11 @@
 <body>
 
 <nav>
-    <a href="/" class="logo">🥾 Sorties Natures</a>
+    <a href="/" class="logo">Sorties Natures</a>
     <div>
         <a href="/">Accueil</a>
         <a href="ajouter.html">Ajouter une sortie</a>
+        <div id="nav-auth" class="nav-auth"></div>
     </div>
 </nav>
 
@@ -30,6 +31,7 @@
     </form>
 </div>
 
+<script src="js/auth.js"></script>
 <script>
 document.getElementById('form-import').onsubmit = async (e) => {
     e.preventDefault();
