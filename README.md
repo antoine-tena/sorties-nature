@@ -13,6 +13,12 @@ Ouvrir ensuite http://localhost:3000
 La base MySQL est initialisée automatiquement au premier lancement du conteneur avec `bdd.sql`.
 L'application web est désormais servie par PHP/Apache, et l'acces a la base se fait via des fichiers PHP.
 
+## Réorganistion du dépôt
+
+- `php/config`, `php/http`, `php/auth`, `php/repositories`, `php/controllers`, `php/router` : backend PHP découpé par responsabilité.
+- `public/js/core`, `public/js/pages`, `public/js/maps` : scripts front rangés par rôle.
+- `docker/php` : configuration de l'image Apache/PHP.
+
 ## Réinitialiser la base
 
 Si le volume Docker existe déjà, MySQL ne rejoue pas automatiquement le script SQL.
@@ -25,6 +31,7 @@ docker compose up -d
 Ou, si le conteneur MySQL tourne déjà :
 
 ```bash
+npm install
 npm run db:init
 ```
 
@@ -57,3 +64,4 @@ DB_PASSWORD=sorties_password
 - PHP + Apache
 - MySQL 8 via Docker Compose
 - HTML / CSS / JavaScript
+- Node.js uniquement pour le script local de réinitialisation `npm run db:init`

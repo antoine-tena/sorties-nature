@@ -73,8 +73,8 @@ Trigger
 Donnees de demo prevues dans bdd.sql
 - types de sortie : Randonnee pedestre, Velo / VTT, Ski / Raquettes, Trail
 - 1 utilisateur demo : demo@sorties.local / mot de passe demo1234
-- 1 sortie exemple : Tour du Lac d'Annecy
-- 1 realisation exemple associee a cette sortie
+- 10 randonnees de demonstration autour d'Annecy et des massifs proches
+- plusieurs realisations exemples associees a certaines sorties
 
 Remarque MCD
 - STATS_ECO est une table technique, pas forcement indispensable dans un MCD conceptuel
