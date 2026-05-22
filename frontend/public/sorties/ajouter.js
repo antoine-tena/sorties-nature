@@ -1,3 +1,10 @@
+/*
+ * Ce fichier gere la creation d'une nouvelle sortie depuis le formulaire.
+ * Il charge les types, recupere les champs saisis, ajoute eventuellement
+ * un GPX genere depuis la carte puis envoie le tout au backend.
+ * C'est la logique principale de la page d'ajout.
+ */
+
 const traceEditorAjout = window.TraceMapEditor
     ? window.TraceMapEditor.create({
         mapId: 'carte-trace-ajout',
@@ -10,6 +17,7 @@ const traceEditorAjout = window.TraceMapEditor
     })
     : null;
 
+// Cette fonction charge les types disponibles pour remplir la liste deroulante du formulaire.
 async function chargerTypesAjout() {
     const res = await window.apiFetch('/api/types');
     const types = await res.json();
@@ -22,6 +30,7 @@ async function chargerTypesAjout() {
     });
 }
 
+// Cette fonction prepare l'envoi du formulaire d'ajout puis gere le message de retour.
 async function soumettreAjout(e) {
     e.preventDefault();
     const msg = document.getElementById('msg');
@@ -60,6 +69,7 @@ async function soumettreAjout(e) {
     }
 }
 
+// Cette fonction initialise la page d'ajout une fois la session verifiee.
 (async function initPage() {
     const session = await (window.SortiesProtectedPage || Promise.resolve({ user: true }));
     if (!session || !session.user) return;

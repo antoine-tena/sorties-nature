@@ -1,7 +1,15 @@
 <?php
 
+/*
+ * Ce fichier regroupe les routes API qui ne rentrent pas dans un CRUD classique.
+ * Il sert pour les types, les statistiques SQL, l'export global et l'import JSON.
+ * Ca evite de melanger ces actions transverses avec le controleur des sorties.
+ * On y trouve donc les petits services annexes du projet.
+ */
+
 declare(strict_types=1);
 
+// Cette fonction gere les routes meta comme les types, les stats, l'export et l'import de donnees.
 function dispatch_meta_route(array $segments, string $method): bool
 {
     if (($segments[0] ?? '') === 'types' && $method === 'GET') {

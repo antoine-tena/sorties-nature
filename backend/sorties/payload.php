@@ -1,7 +1,15 @@
 <?php
 
+/*
+ * Ce fichier prepare les donnees d'une sortie avant insertion ou mise a jour.
+ * Il convertit les types, gere les booleens, cree le dossier d'upload si besoin
+ * et enregistre aussi les fichiers GPX pour que le controleur reste plus lisible.
+ * En pratique, il fait le menage entre les formulaires et la base MySQL.
+ */
+
 declare(strict_types=1);
 
+// Cette fonction convertit une valeur numerique facultative en int, float ou null.
 function app_to_nullable_number(mixed $value): int|float|null
 {
     if ($value === null || $value === '') {
@@ -15,6 +23,7 @@ function app_to_nullable_number(mixed $value): int|float|null
     return str_contains((string) $value, '.') ? (float) $value : (int) $value;
 }
 
+// Cette fonction transforme plusieurs formes de booleens en entier 0 ou 1 pour la base.
 function app_to_boolean_int(mixed $value, int $default = 0): int
 {
     if ($value === null || $value === '') {
@@ -24,6 +33,7 @@ function app_to_boolean_int(mixed $value, int $default = 0): int
     return in_array($value, [true, 1, '1', 'true', 'on'], true) ? 1 : 0;
 }
 
+// Cette fonction garantit que le dossier d'uploads existe avant de stocker un GPX.
 function app_uploads_directory(): string
 {
     $path = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'uploads';
@@ -34,6 +44,7 @@ function app_uploads_directory(): string
     return $path;
 }
 
+// Cette fonction sauvegarde un fichier GPX envoye par le formulaire et renvoie son chemin public.
 function app_save_uploaded_file(?array $file): ?string
 {
     if (!$file || (($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE)) {
@@ -54,6 +65,7 @@ function app_save_uploaded_file(?array $file): ?string
     return '/uploads/' . $name;
 }
 
+// Cette fonction construit un payload propre et normalise pour les creations et modifications de sorties.
 function app_build_sortie_payload(array $body, ?array $gpxFile = null, ?string $existingTrace = null): array
 {
     $trace = $existingTrace ?? (($body['trace_gpx'] ?? null) ?: null);

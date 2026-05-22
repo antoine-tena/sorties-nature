@@ -1,7 +1,15 @@
 <?php
 
+/*
+ * Ce fichier gere toutes les routes d'authentification de l'API.
+ * On y retrouve la lecture de session, l'inscription, la connexion
+ * et la deconnexion avec les verifications de base cote serveur.
+ * C'est lui qui decide quoi faire selon l'URL et la methode HTTP.
+ */
+
 declare(strict_types=1);
 
+// Cette fonction distribue les actions d'authentification selon les segments d'URL recus.
 function dispatch_auth_route(array $segments, string $method): bool
 {
     if (($segments[0] ?? '') !== 'auth') {

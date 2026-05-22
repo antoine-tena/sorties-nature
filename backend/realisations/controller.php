@@ -1,7 +1,15 @@
 <?php
 
+/*
+ * Ce fichier gere les routes API des realisations associees aux sorties.
+ * Il controle les champs obligatoires, appelle les fonctions SQL adaptees
+ * et renvoie des reponses simples pour l'ajout, la mise a jour ou la suppression.
+ * C'est la partie HTTP du petit module d'historique des sorties faites.
+ */
+
 declare(strict_types=1);
 
+// Cette fonction traite les routes de consultation et de gestion des realisations.
 function dispatch_realisation_route(array $segments, string $method): bool
 {
     if (($segments[0] ?? '') !== 'realisations') {

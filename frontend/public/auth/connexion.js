@@ -1,3 +1,11 @@
+/*
+ * Ce fichier gere le formulaire de connexion du site.
+ * Il recupere l'email et le mot de passe, envoie la requete a l'API,
+ * puis affiche un message propre avant de rediriger vers la bonne page.
+ * Toute la logique de connexion cote navigateur est centralisee ici.
+ */
+
+// Cette fonction initialise la page de connexion et branche l'envoi du formulaire.
 (async function initPage() {
     await (window.SortiesGuestPage || Promise.resolve());
 

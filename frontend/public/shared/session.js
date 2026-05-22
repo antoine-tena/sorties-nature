@@ -1,6 +1,14 @@
+/*
+ * Ce fichier gere la session cote navigateur et le petit bloc d'authentification
+ * visible dans la navigation. Il sait verifier si quelqu'un est connecte,
+ * preparer les redirections vers la connexion et proteger les textes injectes.
+ * En pratique, c'est la base commune des pages du site.
+ */
+
 (function () {
     let sessionPromise = null;
 
+    // Cette fonction echappe le HTML pour eviter d'injecter du contenu brut dans la page.
     function escapeHtml(value) {
         return String(value ?? '')
             .replace(/&/g, '&amp;')
@@ -10,10 +18,12 @@
             .replace(/'/g, '&#39;');
     }
 
+    // Cette fonction reconstruit l'URL courante pour revenir dessus apres la connexion.
     function nextTarget() {
         return encodeURIComponent(window.location.pathname + window.location.search);
     }
 
+    // Cette fonction charge la session courante une fois puis reutilise la meme promesse si possible.
     async function fetchSession(force = false) {
         if (!sessionPromise || force) {
             sessionPromise = fetch('/api/auth/session', {
@@ -29,6 +39,7 @@
         return sessionPromise;
     }
 
+    // Cette fonction met a jour le menu en haut selon que l'utilisateur est connecte ou non.
     function renderAuthNav(session) {
         const container = document.getElementById('nav-auth');
         if (!container) return;
@@ -47,16 +58,19 @@
         `;
     }
 
+    // Cette fonction initialise la navigation en recuperant la session puis en affichant le bon etat.
     async function initNavigation() {
         const session = await fetchSession();
         renderAuthNav(session);
         return session;
     }
 
+    // Cette fonction envoie l'utilisateur sur la page de connexion avec l'URL de retour.
     function redirectToLogin() {
         window.location.replace(`/auth/connexion.html?next=${nextTarget()}`);
     }
 
+    // Cette fonction bloque une page reservee aux utilisateurs connectes.
     async function requireAuthenticatedSession() {
         const session = await initNavigation();
         if (!session.user) {
@@ -67,6 +81,7 @@
         return session;
     }
 
+    // Cette fonction empeche un utilisateur deja connecte de retourner sur les pages visiteur.
     async function redirectAuthenticatedHome() {
         const session = await initNavigation();
         if (session.user) {

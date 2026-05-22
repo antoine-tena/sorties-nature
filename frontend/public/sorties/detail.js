@@ -1,3 +1,10 @@
+/*
+ * Ce fichier gere tout l'affichage detaille d'une sortie.
+ * Il charge la sortie, affiche ses infos, initialise la carte,
+ * liste les realisations et branche aussi les actions comme supprimer ou exporter.
+ * C'est le script le plus complet cote consultation.
+ */
+
 const escapeHtml = window.SortiesHtml
     ? window.SortiesHtml.escape
     : (value) => String(value ?? '');
@@ -7,6 +14,7 @@ const idSortiePage = paramsSortie.get('id');
 
 if (!idSortiePage) window.location.href = '/';
 
+// Cette fonction charge les donnees de la sortie demandee puis lance son affichage.
 async function chargerSortiePage() {
     const res = await window.apiFetch('/api/sorties/' + idSortiePage);
 
@@ -19,10 +27,12 @@ async function chargerSortiePage() {
     afficherSortie(sortie);
 }
 
+// Cette fonction evite d'afficher null ou undefined quand un champ texte est absent.
 function texteOuVide(value) {
     return value === null || value === undefined ? '' : value;
 }
 
+// Cette fonction construit le bloc principal de detail et branche toutes les actions de la page.
 function afficherSortie(sortie) {
     const div = document.getElementById('contenu');
     const sortieId = Number(sortie.id) || 0;
@@ -103,6 +113,7 @@ function afficherSortie(sortie) {
     };
 }
 
+// Cette fonction supprime une sortie apres confirmation puis renvoie a l'accueil.
 async function supprimerSortie(idSortie) {
     if (!confirm('Supprimer cette sortie ?')) return;
 
@@ -110,6 +121,7 @@ async function supprimerSortie(idSortie) {
     window.location.href = '/';
 }
 
+// Cette fonction exporte la sortie courante en JSON directement depuis le navigateur.
 function exporterJSON() {
     const sortie = window.sortieCourante;
     if (!sortie) return;
@@ -123,6 +135,7 @@ function exporterJSON() {
     downloadAnchorNode.remove();
 }
 
+// Cette fonction charge puis affiche la liste des realisations liees a la sortie courante.
 async function chargerRealisations(idSortie) {
     const res = await window.apiFetch(`/api/realisations/${idSortie}`);
     const data = await res.json();
@@ -141,6 +154,7 @@ async function chargerRealisations(idSortie) {
     `).join('');
 }
 
+// Cette fonction initialise la carte du detail soit avec les coordonnees, soit avec le GPX.
 function initCarte(sortie) {
     const container = document.getElementById('carte-sortie');
     if (!container || typeof L === 'undefined') return;
@@ -174,6 +188,7 @@ function initCarte(sortie) {
     }
 }
 
+// Cette fonction lit un GPX distant, dessine la trace et recentre la carte dessus.
 async function chargerTraceGpx(carte, url, marker) {
     try {
         const res = await fetch(url);
@@ -207,6 +222,7 @@ async function chargerTraceGpx(carte, url, marker) {
     }
 }
 
+// Cette fonction initialise la page detail une fois la session validee.
 (async function initPage() {
     const session = await (window.SortiesProtectedPage || Promise.resolve({ user: true }));
     if (!session || !session.user) return;

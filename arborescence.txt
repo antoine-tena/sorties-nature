@@ -1,0 +1,75 @@
+.
+|-- .env.example
+|-- .git/
+|-- .gitignore
+|-- MCD.txt
+|-- README.md
+|-- backend/
+|   |-- auth/
+|   |   |-- controller.php
+|   |   `-- repository.php
+|   |-- bootstrap.php
+|   |-- database/
+|   |   `-- schema.sql
+|   |-- meta/
+|   |   `-- controller.php
+|   |-- realisations/
+|   |   |-- controller.php
+|   |   `-- repository.php
+|   |-- shared/
+|   |   |-- db.php
+|   |   |-- request.php
+|   |   |-- response.php
+|   |   |-- router.php
+|   |   `-- session.php
+|   |-- sorties/
+|   |   |-- controller.php
+|   |   |-- payload.php
+|   |   `-- repository.php
+|   `-- tools/
+|       `-- init-db.js
+|-- docker/
+|   `-- php/
+|       |-- 000-default.conf
+|       `-- Dockerfile
+|-- docker-compose.yml
+|-- docs/
+|   |-- examples/
+|   |   `-- annecy.gpx
+|   `-- git.md
+|-- frontend/
+|   `-- public/
+|       |-- api/
+|       |   |-- .htaccess
+|       |   `-- index.php
+|       |-- auth/
+|       |   |-- connexion.html
+|       |   |-- connexion.js
+|       |   |-- deconnexion.html
+|       |   |-- deconnexion.js
+|       |   |-- inscription.html
+|       |   `-- inscription.js
+|       |-- index.html
+|       |-- shared/
+|       |   |-- api.js
+|       |   |-- guest-only.js
+|       |   |-- require-auth.js
+|       |   |-- session.js
+|       |   `-- style.css
+|       `-- sorties/
+|           |-- ajouter.html
+|           |-- ajouter.js
+|           |-- detail.html
+|           |-- detail.js
+|           |-- importer.html
+|           |-- importer.js
+|           |-- liste.js
+|           |-- modifier.html
+|           |-- modifier.js
+|           `-- trace.js
+|-- node_modules/
+|-- package-lock.json
+|-- package.json
+`-- uploads/
+    |-- .gitkeep
+    `-- d50799ebc62b6d5b3e100e00d9dbaa9f

@@ -1,7 +1,15 @@
 <?php
 
+/*
+ * Ce fichier gere les routes API qui concernent les sorties.
+ * Il prend les donnees des formulaires, appelle la couche repository,
+ * verifie les cas obligatoires comme le titre et renvoie la bonne reponse JSON.
+ * Toute la logique HTTP du CRUD des sorties passe ici.
+ */
+
 declare(strict_types=1);
 
+// Cette fonction traite les routes de liste, detail, creation, modification et suppression des sorties.
 function dispatch_sortie_route(array $segments, string $method): bool
 {
     if (($segments[0] ?? '') !== 'sorties') {

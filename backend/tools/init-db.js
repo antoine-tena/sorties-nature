@@ -1,8 +1,13 @@
 const fs = require('fs');
 const mysql = require('mysql2/promise');
 
-// Configuration identique a celle du serveur pour pouvoir reinitialiser la base
-// locale avec la meme base MySQL que l'application.
+/*
+ * Ce script sert a reinitialiser rapidement la base MySQL en local.
+ * Il relit le schema SQL du projet, adapte juste le format si besoin,
+ * puis rejoue tout le contenu pour retrouver un etat propre de developpement.
+ * C'est pratique quand on veut repartir de zero sans passer par Docker complet.
+ */
+
 const config = {
     host: process.env.DB_HOST || 'localhost',
     port: Number(process.env.DB_PORT || 3306),
@@ -12,8 +17,7 @@ const config = {
     multipleStatements: true
 };
 
-// Le client mysql2 n'interprete pas les directives DELIMITER du client mysql.
-// On les retire uniquement pour executer le trigger depuis Node.js.
+// Cette fonction adapte le schema SQL pour que mysql2 puisse executer correctement le trigger.
 function sqlForMysql2(sql) {
     return sql
         .replace(/^DELIMITER\s+\/\/\s*$/gm, '')
@@ -21,8 +25,8 @@ function sqlForMysql2(sql) {
         .replace(/END\/\/\s*/g, 'END;');
 }
 
+// Cette fonction relit le schema complet, ouvre la connexion puis rejoue l'initialisation de la base.
 async function main() {
-    // schema.sql contient le schema complet : tables, contraintes, trigger et donnees de demo.
     const sqlPath = require('path').join(__dirname, '..', 'database', 'schema.sql');
     const sql = sqlForMysql2(fs.readFileSync(sqlPath, 'utf8'));
     const conn = await mysql.createConnection(config);

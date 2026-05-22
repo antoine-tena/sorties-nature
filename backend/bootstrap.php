@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * Ce fichier sert de point de depart pour tout le backend PHP du projet.
+ * Il prepare la session, charge les fichiers communs et branche chaque module
+ * qui gere l'authentification, les sorties, les realisations et les routes API.
+ * En gros, c'est ici que l'application serveur est mise en place avant de repondre.
+ */
+
 declare(strict_types=1);
 
 session_set_cookie_params([

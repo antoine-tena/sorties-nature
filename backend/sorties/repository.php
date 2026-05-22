@@ -1,7 +1,15 @@
 <?php
 
+/*
+ * Ce fichier contient toutes les requetes SQL liees aux sorties et aux types.
+ * Il sert a lire les listes, enregistrer les modifications, exporter les donnees
+ * et gerer les imports JSON sans melanger cette logique avec les controleurs HTTP.
+ * C'est vraiment la couche d'acces aux donnees du coeur du projet.
+ */
+
 declare(strict_types=1);
 
+// Cette fonction charge une sortie unique avec le nom lisible de son type.
 function sorties_find_by_id(int $id): ?array
 {
     $stmt = app_db()->prepare(
@@ -16,6 +24,7 @@ function sorties_find_by_id(int $id): ?array
     return $sortie ?: null;
 }
 
+// Cette fonction recupere la liste complete des sorties pour la page d'accueil.
 function sorties_list_all(): array
 {
     return app_db()->query(
@@ -26,6 +35,7 @@ function sorties_list_all(): array
     )->fetchAll();
 }
 
+// Cette fonction insere une nouvelle sortie en base puis renvoie son identifiant.
 function sorties_create(array $payload): int
 {
     $stmt = app_db()->prepare(
@@ -51,6 +61,7 @@ function sorties_create(array $payload): int
     return (int) app_db()->lastInsertId();
 }
 
+// Cette fonction met a jour une sortie existante avec les valeurs deja normalisees.
 function sorties_update(int $id, array $payload): void
 {
     $stmt = app_db()->prepare(
@@ -76,22 +87,26 @@ function sorties_update(int $id, array $payload): void
     ]);
 }
 
+// Cette fonction supprime une sortie en base, avec les cascades SQL prevues derriere.
 function sorties_delete(int $id): void
 {
     $stmt = app_db()->prepare('DELETE FROM sorties WHERE id = ?');
     $stmt->execute([$id]);
 }
 
+// Cette fonction renvoie la liste des types de sortie disponibles pour les formulaires.
 function sorties_list_types(): array
 {
     return app_db()->query('SELECT * FROM types_sortie ORDER BY nom')->fetchAll();
 }
 
+// Cette fonction lit les statistiques stockees dans la table technique prevue pour ca.
 function sorties_list_stats(): array
 {
     return app_db()->query('SELECT label, valeur FROM stats_eco ORDER BY label')->fetchAll();
 }
 
+// Cette fonction construit l'export JSON complet en regroupant chaque sortie avec ses realisations.
 function sorties_export_all(): array
 {
     $sorties = app_db()->query(
@@ -113,6 +128,7 @@ function sorties_export_all(): array
     }, $sorties);
 }
 
+// Cette fonction retrouve l'id d'un type pendant l'import, ou le cree si besoin.
 function sorties_resolve_type_id(PDO $pdo, array $sortie): ?int
 {
     if (!empty($sortie['id_type_sortie'])) {
@@ -137,6 +153,7 @@ function sorties_resolve_type_id(PDO $pdo, array $sortie): ?int
     return (int) $pdo->lastInsertId();
 }
 
+// Cette fonction importe un lot de sorties et de realisations dans une transaction SQL unique.
 function sorties_import_many(array $sorties): int
 {
     $pdo = app_db();

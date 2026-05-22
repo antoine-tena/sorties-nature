@@ -1,7 +1,15 @@
 <?php
 
+/*
+ * Ce fichier centralise la connexion PDO utilisee partout dans le backend.
+ * Le but est d'ouvrir une seule connexion a la base puis de la reutiliser
+ * dans les repositories, au lieu de recreer un acces MySQL a chaque appel.
+ * Ca simplifie le code et garde la configuration au meme endroit.
+ */
+
 declare(strict_types=1);
 
+// Cette fonction cree la connexion PDO une seule fois puis la renvoie a chaque appel suivant.
 function app_db(): PDO
 {
     static $pdo = null;

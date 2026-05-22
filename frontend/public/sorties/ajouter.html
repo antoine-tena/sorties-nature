@@ -9,6 +9,13 @@
 </head>
 <body>
 
+<!--
+Cette page contient le formulaire complet pour ajouter une nouvelle sortie.
+On y trouve les champs descriptifs, les coordonnees de depart, l'upload GPX
+et la carte interactive qui permet aussi de dessiner une trace directement.
+Le traitement du formulaire est ensuite gere par le script JavaScript dedie.
+-->
+
 <nav>
     <a href="/" class="logo">Sorties Natures</a>
     <div>
@@ -63,8 +70,6 @@
                 <input type="number" name="denivele_positif" id="denivele_positif" min="0">
             </div>
         </div>
-
-        <!-- Ajout du Géo-référencement (Point 1 du cahier des charges) -->
         <div style="display:flex; gap:15px; flex-wrap:wrap;">
             <div class="form-groupe" style="flex:1;">
                 <label for="latitude">Latitude départ</label>

@@ -1,3 +1,8 @@
+# Ce fichier lance l'environnement complet du projet avec Docker Compose.
+# Il declare un conteneur web pour PHP/Apache et un conteneur MySQL pour la base.
+# L'ensemble suffit pour demarrer l'application en local avec la bonne configuration.
+# C'est le point d'entree principal pour lancer le projet sans installation manuelle.
+
 services:
   web:
     build:

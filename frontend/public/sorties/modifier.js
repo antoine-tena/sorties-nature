@@ -1,3 +1,10 @@
+/*
+ * Ce fichier gere la modification d'une sortie existante.
+ * Il charge d'abord la sortie et les types disponibles, remplit le formulaire,
+ * puis renvoie les changements au backend avec la trace GPX si besoin.
+ * Toute la logique de la page de modification passe ici.
+ */
+
 const paramsModifier = new URLSearchParams(window.location.search);
 const idModifier = paramsModifier.get('id');
 const traceEditorModifier = window.TraceMapEditor
@@ -18,6 +25,7 @@ if (!idModifier) {
     document.getElementById('btn-annuler').href = '/sorties/detail.html?id=' + idModifier;
 }
 
+// Cette fonction charge les types de sortie pour le formulaire de modification.
 async function chargerTypesModifier() {
     const res = await window.apiFetch('/api/types');
     const types = await res.json();
@@ -30,6 +38,7 @@ async function chargerTypesModifier() {
     });
 }
 
+// Cette fonction charge la sortie a modifier puis remet la carte au bon endroit.
 async function chargerSortieModifier() {
     await chargerTypesModifier();
 
@@ -63,6 +72,7 @@ async function chargerSortieModifier() {
     }
 }
 
+// Cette fonction envoie les changements du formulaire vers l'API et affiche le resultat.
 async function soumettreModification(e) {
     e.preventDefault();
 
@@ -94,6 +104,7 @@ async function soumettreModification(e) {
     }
 }
 
+// Cette fonction initialise la page de modification une fois l'acces verifie.
 (async function initPage() {
     const session = await (window.SortiesProtectedPage || Promise.resolve({ user: true }));
     if (!session || !session.user) return;

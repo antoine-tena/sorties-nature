@@ -1,3 +1,11 @@
+/*
+ * Ce fichier s'occupe de l'import JSON des sorties depuis le navigateur.
+ * Il lit le fichier choisi par l'utilisateur, verifie que le JSON est correct,
+ * puis l'envoie au backend pour que l'import en base soit fait cote serveur.
+ * La page reste volontairement simple et directe a utiliser.
+ */
+
+// Cette fonction initialise la page d'import et branche l'envoi du formulaire.
 (async function initPage() {
     const session = await (window.SortiesProtectedPage || Promise.resolve({ user: true }));
     if (!session || !session.user) return;

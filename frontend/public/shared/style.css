@@ -1,6 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Manrope:wght@400;500;600&display=swap");
 
-/* styles generaux */
+/*
+ * Cette feuille de style gere toute l'identite visuelle du projet.
+ * Elle contient les couleurs, la typo, les cartes, les formulaires,
+ * les boutons et les mises en page communes pour toutes les pages du site.
+ * Le but est d'avoir un rendu coherent sans disperser le style partout.
+ */
+
+/* Cette partie pose les variables, les bases globales et la structure commune des pages. */
 :root {
     --bg: #f3efe7;
     --bg-2: #e7f0ea;
@@ -173,7 +180,7 @@ h3 {
     color: var(--muted);
 }
 
-/* filtres */
+/* Cette partie regroupe les styles de la zone de filtres sur la page d'accueil. */
 .filtres {
     display: flex;
     gap: 12px;
@@ -196,7 +203,7 @@ h3 {
     min-width: 190px;
 }
 
-/* cartes des sorties */
+/* Cette partie gere la grille des cartes et leur apparence dans la liste des sorties. */
 .grille {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
@@ -264,7 +271,7 @@ h3 {
     border: 1px solid rgba(45, 106, 79, 0.15);
 }
 
-/* boutons */
+/* Cette partie definit les differents boutons utilises dans l'interface. */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -318,7 +325,7 @@ h3 {
     border: 1px solid rgba(45, 106, 79, 0.2);
 }
 
-/* formulaire */
+/* Cette partie gere l'apparence des formulaires et de la carte de saisie. */
 .form-groupe {
     margin-bottom: 15px;
 }
@@ -390,7 +397,7 @@ form {
 .msg-ok { color: #2b8a3e; margin-top: 10px; }
 .msg-err { color: #c1121f; margin-top: 10px; }
 
-/* detail sortie */
+/* Cette partie met en forme la page de detail d'une sortie et ses informations secondaires. */
 .sortie-detail {
     background: var(--surface);
     padding: 24px;
@@ -475,7 +482,7 @@ form {
     }
 }
 
-/* responsive mobile */
+/* Cette partie adapte la mise en page quand l'ecran devient plus etroit. */
 @media (max-width: 700px) {
     .grille {
         grid-template-columns: 1fr;

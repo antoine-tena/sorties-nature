@@ -1,9 +1,17 @@
+/*
+ * Ce fichier pilote la page d'accueil qui liste toutes les sorties.
+ * Il charge les donnees depuis l'API, remplit les filtres disponibles,
+ * puis reconstruit l'affichage en fonction de la recherche de l'utilisateur.
+ * C'est donc la logique principale de consultation du catalogue.
+ */
+
 const escapeHtml = window.SortiesHtml
     ? window.SortiesHtml.escape
     : (value) => String(value ?? '');
 
 let toutesLesSorties = [];
 
+// Cette fonction charge toutes les sorties puis demande aussi la liste des types disponibles.
 async function chargerSorties() {
     const res = await window.apiFetch('/api/sorties');
     toutesLesSorties = await res.json();
@@ -11,6 +19,7 @@ async function chargerSorties() {
     await chargerTypes();
 }
 
+// Cette fonction remplit le select des types a partir des donnees renvoyees par l'API.
 async function chargerTypes() {
     const res = await window.apiFetch('/api/types');
     const types = await res.json();
@@ -24,6 +33,7 @@ async function chargerTypes() {
     });
 }
 
+// Cette fonction genere les cartes HTML de la liste a partir des sorties filtrees.
 function afficherSorties(liste) {
     const div = document.getElementById('liste-sorties');
     const compteur = document.getElementById('compteur');
@@ -61,6 +71,7 @@ function afficherSorties(liste) {
     div.innerHTML = html;
 }
 
+// Cette fonction applique les filtres saisis dans la page sur la liste complete en memoire.
 function filtrer() {
     const texte = document.getElementById('recherche').value.toLowerCase();
     const type = document.getElementById('filtre-type').value;
@@ -82,6 +93,7 @@ document.getElementById('filtre-type').addEventListener('change', filtrer);
 document.getElementById('filtre-difficulte').addEventListener('change', filtrer);
 document.getElementById('filtre-chien').addEventListener('change', filtrer);
 
+// Cette fonction initialise la page protegee puis lance le premier chargement des sorties.
 (async function initPage() {
     const session = await (window.SortiesProtectedPage || Promise.resolve({ user: true }));
     if (!session || !session.user) return;
