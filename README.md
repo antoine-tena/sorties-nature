@@ -10,14 +10,17 @@ docker compose up -d --build
 
 Ouvrir ensuite http://localhost:3000
 
-La base MySQL est initialisée automatiquement au premier lancement du conteneur avec `bdd.sql`.
-L'application web est désormais servie par PHP/Apache, et l'acces a la base se fait via des fichiers PHP.
+La base MySQL est initialisée automatiquement au premier lancement du conteneur avec `backend/database/schema.sql`.
+L'application web est désormais servie par PHP/Apache, et l'acces a la base se fait via le dossier `backend`.
 
-## Réorganistion du dépôt
+## Réorganisation du dépôt
 
-- `php/config`, `php/http`, `php/auth`, `php/repositories`, `php/controllers`, `php/router` : backend PHP découpé par responsabilité.
-- `public/js/core`, `public/js/pages`, `public/js/maps` : scripts front rangés par rôle.
+- `backend` : code serveur, organise par fonctionnalite (`auth`, `sorties`, `realisations`, `meta`, `shared`).
+- `frontend/public` : site web public, organise par fonctionnalite (`auth`, `sorties`, `shared`).
+- `backend/database/schema.sql` : schema et donnees de demonstration.
+- `backend/tools/init-db.js` : script local de reinitialisation.
 - `docker/php` : configuration de l'image Apache/PHP.
+- `docs` : fichiers annexes (`mcd.txt`, `presentation.txt`, `git.md`, exemple GPX).
 
 ## Réinitialiser la base
 
