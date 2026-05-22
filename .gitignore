@@ -10,6 +10,9 @@
 *.userosscache
 *.sln.docstates
 *.env
+node_modules/
+uploads/*
+!uploads/.gitkeep
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -427,3 +430,7 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+
+#ignorer fichier base de données
+*.db

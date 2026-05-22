@@ -1,0 +1,11 @@
+{
+  "name": "sorties-natures",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "db:init": "node backend/tools/init-db.js"
+  },
+  "dependencies": {
+    "mysql2": "^3.15.3"
+  }
+}
